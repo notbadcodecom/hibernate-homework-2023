@@ -1,5 +1,7 @@
 package ru.hh.school.entity;
 
+import org.hibernate.annotations.CreationTimestamp;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -10,29 +12,45 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import java.time.LocalDateTime;
-import java.util.Objects;
 
 //TODO: оформите entity
+@Entity
+@Table(name = "vacancy", schema = "public")
 public class Vacancy {
 
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Column(name = "vacancy_id", nullable = false, updatable = false)
   private Integer id;
 
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name="employer_id", nullable=false)
   private Employer employer;
 
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "area_id")
   private Area area;
 
+  @Column(name = "title", nullable = false)
   private String title;
 
+  @Column(name = "description")
   private String description;
 
+  @Column(name = "compensation_from")
   private Integer compensationFrom;
 
+  @Column(name = "compensation_to")
   private Integer  compensationTo;
 
+  @Column(name = "compensation_gross")
   private Boolean compensationGross;
 
+  @CreationTimestamp
+  @Column(name = "creation_time", nullable = false, updatable = false)
   private LocalDateTime creationTime;
 
+  @Column(name = "archiving_time")
   private LocalDateTime archivingTime;
 
   public Vacancy() {
@@ -91,16 +109,20 @@ public class Vacancy {
   }
 
   @Override
-  public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
-    Vacancy vacancy = (Vacancy) o;
-    return Objects.equals(id, vacancy.id);
+  public boolean equals(Object object) {
+    if (this == object) return true;
+    if (object == null || getClass() != object.getClass()) return false;
+    Vacancy otherVacancy = (Vacancy) object;
+    return  id.equals(otherVacancy.getId())
+            && title.equals(otherVacancy.getTitle());
   }
 
   @Override
   public int hashCode() {
-    return 17;
+    int hash = id * id;
+    hash = 31 * hash + (title == null ? 0 : title.hashCode());
+    hash = 31 * hash + (description == null ? 0 : description.hashCode());
+    return hash;
   }
 
 }
